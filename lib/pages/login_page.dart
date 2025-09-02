@@ -1,5 +1,8 @@
+import 'package:chat/helper/mostrar_alerta.dart';
+import 'package:chat/services/auth_service.dart';
 import 'package:chat/widgets/widget.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -46,6 +49,7 @@ class _FormState extends State<_Form> {
   final passwordCtrl = TextEditingController();
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context);
     return Container(
       margin: EdgeInsets.only(top: 40),
       padding: EdgeInsets.symmetric(horizontal: 50),
@@ -66,10 +70,26 @@ class _FormState extends State<_Form> {
           ),
           Button(
             text: 'Ingresar',
-            onPressed: () {
-              print(emailCtrl.text);
-              print(passwordCtrl.text);
-            },
+            onPressed: authService.autenticando
+                ? null
+                : () async {
+                    FocusScope.of(context).unfocus();
+                    final loginOk = await authService.login(
+                      emailCtrl.text.trim(),
+                      passwordCtrl.text.trim(),
+                    );
+                    if (loginOk) {
+                      //navegar a otra pantalla
+                      Navigator.pushReplacementNamed(context, 'usuarios');
+                    } else {
+                      //mostrar alerta
+                      mostrarAlerta(
+                        context,
+                        'Login incorrecto',
+                        'Credencial8es invalidas',
+                      );
+                    }
+                  },
           ),
         ],
       ),

@@ -1,5 +1,8 @@
 import 'package:chat/models/usuario.dart';
+import 'package:chat/pages/login_page.dart';
+import 'package:chat/services/auth_service.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class UsuariosPage extends StatefulWidget {
@@ -13,41 +16,30 @@ class _UsuariosPageState extends State<UsuariosPage> {
   final RefreshController _refreshController = RefreshController(
     initialRefresh: false,
   );
-  final usuarios = [
-    Usuario(
-      uid: "1",
-      online: true,
-      email: "test1@google.com",
-      nombre: "Antony",
-    ),
-    Usuario(
-      uid: "2",
-      online: false,
-      email: "test2@google.com",
-      nombre: "Yanira",
-    ),
-    Usuario(
-      uid: "3",
-      online: false,
-      email: "test4@google.com",
-      nombre: "Arlen",
-    ),
-    Usuario(
-      uid: "4",
-      online: true,
-      email: "test5@google.com",
-      nombre: "Brando",
-    ),
-  ];
+  final usuarios = [];
   @override
   Widget build(BuildContext context) {
+    final authServise = Provider.of<AuthService>(context);
+    final usuario = authServise.usuario;
     return Scaffold(
       appBar: AppBar(
-        title: Text('Mi nombre'),
+        title: Text(usuario.nombre),
         centerTitle: true,
         elevation: 1,
         backgroundColor: Colors.white,
-        leading: IconButton(onPressed: () {}, icon: Icon(Icons.exit_to_app)),
+        leading: IconButton(
+          onPressed: () {
+            AuthService.deleteToken();
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (_, __, ___) => LoginPage(),
+                transitionDuration: Duration(milliseconds: 0),
+              ),
+            );
+          },
+          icon: Icon(Icons.exit_to_app),
+        ),
         actions: [
           Container(
             margin: EdgeInsets.only(right: 10),
@@ -93,7 +85,7 @@ class _UsuariosPageState extends State<UsuariosPage> {
     );
   }
 
-   _cargarUsuarios() async {
+  _cargarUsuarios() async {
     // monitor network fetch
     await Future.delayed(Duration(milliseconds: 1000));
     // if failed,use refreshFailed()

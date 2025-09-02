@@ -1,5 +1,8 @@
+import 'package:chat/helper/mostrar_alerta.dart';
+import 'package:chat/services/auth_service.dart';
 import 'package:chat/widgets/widget.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class RegisterPage extends StatelessWidget {
   const RegisterPage({super.key});
@@ -47,6 +50,7 @@ class _FormState extends State<_Form> {
   final nameCtrl = TextEditingController();
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context);
     return Container(
       margin: EdgeInsets.only(top: 40),
       padding: EdgeInsets.symmetric(horizontal: 50),
@@ -72,11 +76,21 @@ class _FormState extends State<_Form> {
             isPassword: true,
           ),
           Button(
-            text: 'Ingresar',
-            onPressed: () {
-              print(emailCtrl.text);
-              print(passwordCtrl.text);
-            },
+            text: 'Crear cuenta',
+            onPressed: authService.autenticando
+                ? null
+                : () async {
+                    final response = await authService.register(
+                      nameCtrl.text.trim(),
+                      emailCtrl.text.trim(),
+                      passwordCtrl.text.trim(),
+                    );
+                    if (response != "OK") {
+                      mostrarAlerta(context, 'Validaciones', response);
+                    } else {
+                      Navigator.pushReplacementNamed(context, 'usuarios');
+                    }
+                  },
           ),
         ],
       ),

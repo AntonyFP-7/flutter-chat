@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class Button extends StatelessWidget {
   final String text;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   const Button({super.key, required this.text, required this.onPressed});
 
   @override
@@ -12,7 +12,12 @@ class Button extends StatelessWidget {
       height: 55,
       child: ElevatedButton(
         style: ButtonStyle(
-          backgroundColor: WidgetStateProperty.all<Color>(Colors.blue),
+          backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+            if (states.contains(WidgetState.disabled)) {
+              return Colors.grey;
+            }
+            return Colors.blue;
+          }),
           elevation: WidgetStateProperty.all<double>(2),
         ),
         onPressed: onPressed,
