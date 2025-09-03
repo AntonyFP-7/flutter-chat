@@ -1,5 +1,6 @@
 import 'package:chat/helper/mostrar_alerta.dart';
 import 'package:chat/services/auth_service.dart';
+import 'package:chat/services/socket_service.dart';
 import 'package:chat/widgets/widget.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -51,6 +52,8 @@ class _FormState extends State<_Form> {
   @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context);
+    final socketService = Provider.of<SocketService>(context);
+
     return Container(
       margin: EdgeInsets.only(top: 40),
       padding: EdgeInsets.symmetric(horizontal: 50),
@@ -86,6 +89,7 @@ class _FormState extends State<_Form> {
                       passwordCtrl.text.trim(),
                     );
                     if (response != "OK") {
+                      socketService.connect();
                       mostrarAlerta(context, 'Validaciones', response);
                     } else {
                       Navigator.pushReplacementNamed(context, 'usuarios');
