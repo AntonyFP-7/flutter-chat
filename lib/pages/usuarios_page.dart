@@ -2,6 +2,7 @@ import 'package:chat/models/usuario.dart';
 import 'package:chat/pages/login_page.dart';
 import 'package:chat/services/auth_service.dart';
 import 'package:chat/services/socket_service.dart';
+import 'package:chat/services/usuarios_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -14,10 +15,17 @@ class UsuariosPage extends StatefulWidget {
 }
 
 class _UsuariosPageState extends State<UsuariosPage> {
+  final usuariosService = UsuariosService();
   final RefreshController _refreshController = RefreshController(
     initialRefresh: false,
   );
-  final usuarios = [];
+  List<Usuario> usuarios = [];
+  @override
+  void initState() {
+    _cargarUsuarios();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final authServise = Provider.of<AuthService>(context);
@@ -91,8 +99,10 @@ class _UsuariosPageState extends State<UsuariosPage> {
   }
 
   _cargarUsuarios() async {
+    usuarios = await usuariosService.getUsuarios();
+    setState(() {});
     // monitor network fetch
-    await Future.delayed(Duration(milliseconds: 1000));
+    // await Future.delayed(Duration(milliseconds: 1000));
     // if failed,use refreshFailed()
     _refreshController.refreshCompleted();
   }
