@@ -1,6 +1,7 @@
 import 'package:chat/models/usuario.dart';
 import 'package:chat/pages/login_page.dart';
 import 'package:chat/services/auth_service.dart';
+import 'package:chat/services/chat_service.dart';
 import 'package:chat/services/socket_service.dart';
 import 'package:chat/services/usuarios_service.dart';
 import 'package:flutter/material.dart';
@@ -83,6 +84,7 @@ class _UsuariosPageState extends State<UsuariosPage> {
   }
 
   ListTile _usuarioListTitle(Usuario usuario) {
+    final chatService = Provider.of<ChatService>(context, listen: false);
     return ListTile(
       title: Text(usuario.nombre),
       subtitle: Text(usuario.email),
@@ -95,6 +97,10 @@ class _UsuariosPageState extends State<UsuariosPage> {
           borderRadius: BorderRadius.circular(100),
         ),
       ),
+      onTap: () {
+        chatService.usuarioPara = usuario;
+        Navigator.pushNamed(context, 'chat');
+      },
     );
   }
 
